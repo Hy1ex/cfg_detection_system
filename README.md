@@ -25,3 +25,6 @@ fair play rules.
 | **sm_cfgds_punishmode** | ``Punishment mode.``<br/>**0** - Report<br/>**1** - Kick<br/>**2** - Ban<br/> |
 | **sm_cfgds_ban_mode** | ``Ban mode.``<br/>**1** - SteamID<br/>**2** - IP Address<br/> |
 | **sm_cfgds_ban_duration** | ``Ban duration in minutes (0=permanent)`` |
+
+## Todo
+- Grow the convar database
