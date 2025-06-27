@@ -120,7 +120,7 @@ public void OnPluginStart()
     }
     
     // Create config file
-    AutoExecConfig(true, "convar_checker");
+    AutoExecConfig(true, "convarchecker");
 }
 
 public void OnConfigsExecuted()

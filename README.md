@@ -1,11 +1,10 @@
-# CFG Detection System
-CFG Detection System is a plugin for Counter-Strike Source v34 (Build 4044) Servers made in Sourcepawn
+# ConVar Checker
+ConVar Checker is a plugin for Counter-Strike Source v34 (Build 4044) Servers made in Sourcepawn
 and need Metamod + Sourcemod to run.
-The point of this plugin is simple, this plugin detects clients(players) that are using cfgs to give them
-self advantage and using unfair scripts(aliases) to greif the server.
-This plugin doesn't do much because the advantage that some players can get from cfgs and scripts(aliases)
-is not too much and doesn't effect the gameplay at all, This plugin is meant for server with high restrictions and
-fair play rules.
+The point of this plugin is simple, this plugin detects clients(players) that are using custom convar values to give them
+self advantage.
+Aggresive ConVar blocking because someone could potentially use it in a "bad" way is bad approach but this plugin is made for servers
+with high restriction.
 
 ## Compilation Dependencies:
 - Clientmod Library (Included)
@@ -20,11 +19,14 @@ fair play rules.
 ## Convars
 | Console variable | Description |
 | --- | --- |
-| **sm_cfgds_adminflag** | ``Admin flag for CFG Detection System panel/menu access.`` |
-| **sm_cfgds_autodetect** | ``Automatically check players on join.``<br/>**0** - disabled<br/>**1** - enabled<br/> |
-| **sm_cfgds_punishmode** | ``Punishment mode.``<br/>**0** - Report<br/>**1** - Kick<br/>**2** - Ban<br/> |
-| **sm_cfgds_ban_mode** | ``Ban mode.``<br/>**1** - SteamID<br/>**2** - IP Address<br/> |
-| **sm_cfgds_ban_duration** | ``Ban duration in minutes (0=permanent)`` |
+| **sm_cvc_adminflag** | ``Admin flag for ConVar Checker panel/menu access.`` |
+| **sm_cvc_autodetect** | ``Automatically check players on join.``<br/>**0** - disabled<br/>**1** - enabled<br/> |
+| **sm_cvc_punishmode** | ``Punishment mode.``<br/>**0** - Report<br/>**1** - Kick<br/>**2** - Ban<br/> |
+| **sm_cvc_ban_mode** | ``Ban mode.``<br/>**1** - SteamID<br/>**2** - IP Address<br/> |
+| **sm_cvc_ban_duration** | ``Ban duration in minutes (0=permanent)`` |
+| **sm_cfg** | ``Opens ConVar Checker menu.`` |
+| **sm_cvc** | ``Opens ConVar Checker menu.`` |
+| **sm_convarchecker** | ``Opens ConVar Checker menu.`` |
 
 ## Todo
 - Grow the convar database
