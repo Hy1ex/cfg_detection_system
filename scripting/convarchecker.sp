@@ -98,7 +98,7 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     // Create plugin convars
-    g_cvAdminFlag = CreateConVar("sm_cvc_adminflag", "e", "Admin flag needed for ConVar Checker menu access");
+    g_cvAdminFlag = CreateConVar("sm_cvc_adminflag", "e", "Admin flag required for ConVar Checker menu access");
     g_cvAutoDetect = CreateConVar("sm_cvc_autodetect", "0", "Automatically check players on join? 0=Off, 1=On", _, true, 0.0, true, 1.0);
     g_cvPunishMode = CreateConVar("sm_cvc_punishmode", "1", "Punishment mode: 0=Report, 1=Kick, 2=Ban", _, true, 0.0, true, 2.0);
     g_cvBanMode = CreateConVar("sm_cvc_ban_mode", "1", "Ban mode: 1=SteamID, 2=IP Address", _, true, 1.0, true, 2.0);
