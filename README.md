@@ -1,6 +1,6 @@
 # ConVar Checker
 ConVar Checker is a plugin for Counter-Strike Source v34 (Build 4044) Servers made in Sourcepawn
-and need Metamod + Sourcemod to run.
+and require Metamod + Sourcemod to run.
 The point of this plugin is simple, this plugin detects clients(players) that are using custom convar values to give them
 self advantage.
 Aggresive ConVar blocking because someone could potentially use it in a "bad" way is bad approach but this plugin is made for servers
