@@ -88,9 +88,9 @@ int g_iInitiator[MAXPLAYERS+1];
 
 public Plugin myinfo = 
 {
-    name = "CFG Detection System",
+    name = "ConVar Checker",
     author = "hy1ex",
-    description = "Checks client convars and takes action on violations",
+    description = "Checks client convar to ensure player is not using values that give them unfair advantage.",
     version = PLUGIN_VERSION,
     url = "https://github.com/Hy1ex"
 };
@@ -98,17 +98,16 @@ public Plugin myinfo =
 public void OnPluginStart()
 {
     // Create plugin convars
-    g_cvAdminFlag = CreateConVar("sm_cfgds_adminflag", "d", "Admin flag for CFG Detection System panel/menu access");
-    g_cvAutoDetect = CreateConVar("sm_cfgds_autodetect", "0", "Automatically check players on join? 0=Off, 1=On", _, true, 0.0, true, 1.0);
-    g_cvPunishMode = CreateConVar("sm_cfgds_punishmode", "1", "Punishment mode: 0=Report, 1=Kick, 2=Ban", _, true, 0.0, true, 2.0);
-    g_cvBanMode = CreateConVar("sm_cfgds_ban_mode", "1", "Ban mode: 1=SteamID, 2=IP Address", _, true, 1.0, true, 2.0);
-    g_cvBanDuration = CreateConVar("sm_cfgds_ban_duration", "120", "Ban duration in minutes (0=permanent)");
+    g_cvAdminFlag = CreateConVar("sm_cvc_adminflag", "e", "Admin flag needed for ConVar Checker menu access");
+    g_cvAutoDetect = CreateConVar("sm_cvc_autodetect", "0", "Automatically check players on join? 0=Off, 1=On", _, true, 0.0, true, 1.0);
+    g_cvPunishMode = CreateConVar("sm_cvc_punishmode", "1", "Punishment mode: 0=Report, 1=Kick, 2=Ban", _, true, 0.0, true, 2.0);
+    g_cvBanMode = CreateConVar("sm_cvc_ban_mode", "1", "Ban mode: 1=SteamID, 2=IP Address", _, true, 1.0, true, 2.0);
+    g_cvBanDuration = CreateConVar("sm_cvc_ban_duration", "120", "Ban duration in minutes (0=permanent)");
     
     // Register commands
-    RegConsoleCmd("sm_cfgd", Command_ConvarChecker, "Open CFG Detection System aka CFG Detector panel/menu");
-    RegConsoleCmd("sm_cfgdetector", Command_ConvarChecker, "Open CFG Detection System aka CFG Detector panel/menu");
-    RegConsoleCmd("sm_cc", Command_ConvarChecker, "Open CFG Detection System aka CFG Detector panel/menu");
-    RegConsoleCmd("sm_convarchecker", Command_ConvarChecker, "Open CFG Detection System aka CFG Detector panel/menu");
+    RegConsoleCmd("sm_cfg", Command_ConvarChecker, "Opens ConVar Checker menu");
+    RegConsoleCmd("sm_cvc", Command_ConvarChecker, "Opens ConVar Checker menu");
+    RegConsoleCmd("sm_convarchecker", Command_ConvarChecker, "Opens ConVar Checker menu");
     
     // Add convar change hooks
     g_cvAutoDetect.AddChangeHook(ConVarChanged_AutoDetect);
@@ -121,7 +120,7 @@ public void OnPluginStart()
     }
     
     // Create config file
-    AutoExecConfig(true, "cfg_detection_system");
+    AutoExecConfig(true, "convar_checker");
 }
 
 public void OnConfigsExecuted()
@@ -179,10 +178,8 @@ public void CM_OnClientAuth(int client, CMAuthType type)
     char version[8];
     if (CM_GetClientModVersion(client, version, sizeof(version))) {
         g_bIsClientMod[client] = true;
-        PrintToServer("Client %N authenticated as ClientMod v%s", client, version);
     } else {
         g_bIsClientMod[client] = false;
-        PrintToServer("Client %N authenticated as original client", client);
     }
     
     // Auto check if enabled
@@ -258,7 +255,7 @@ void ReportCleanPlayer(int client)
     
     // If check was initiated by an admin and they're still connected
     if (initiator > 0 && IsClientInGame(initiator)) {
-        CPrintToChat(initiator, "[{green}CFG Detection System{default}] Player {blue}%N{default} is clean and not using any CFG.", client);
+        CPrintToChat(initiator, "[{green}ConVar Checker{default}] Player {blue}%N{default} is clean.", client);
     }
     // If auto-detected and admin is watching, don't report clean players to avoid spam
 }
@@ -355,10 +352,10 @@ void ReportAllViolations(int client)
     int flagBits = ReadFlagString(flagString);
     
     for (int i = 1; i <= MaxClients; i++) {
-        if (IsClientInGame(i) && !IsFakeClient(i) && CheckCommandAccess(i, "sm_cfgds_admin", flagBits)) {
-            CPrintToChat(i, "[{green}CFG Detection System{default}] Player {red}%N{default} is using CFG!", client);
+        if (IsClientInGame(i) && !IsFakeClient(i) && CheckCommandAccess(i, "sm_cvc_admin", flagBits)) {
+            CPrintToChat(i, "[{green}ConVar Checker{default}] Player {red}%N{default} violation detected!", client);
             
-            PrintToConsole(i, "===== CFG Detection System Violation Report =====");
+            PrintToConsole(i, "===== ConVar Checker Violation Report =====");
             PrintToConsole(i, "Player: %s", clientName);
             PrintToConsole(i, "UserID: %d", userid);
             PrintToConsole(i, "SteamID: %s", steamid);
@@ -374,7 +371,7 @@ void ReportAllViolations(int client)
                 PrintToConsole(i, "%s", violationMsg);
             }
             
-            PrintToConsole(i, "=================================================");
+            PrintToConsole(i, "===========================================");
         }
     }
 }
@@ -386,7 +383,7 @@ void ApplyPunishment(int client)
     switch (punishMode) {
         case 1: // Kick
         {
-            KickClient(client, "[CFG Detection System] CFG Detected, Please use default CFG.");
+            KickClient(client, "[ConVar Checker] Violation Detected, Please use default values.");
         }
         case 2: // Ban
         {
@@ -407,7 +404,7 @@ void ApplyPunishment(int client)
             }
             
             char reason[256];
-            Format(reason, sizeof(reason), "[CFG Detection System] CFG Detected.");
+            Format(reason, sizeof(reason), "[ConVar Checker] Violation Detected.");
             
             char kickMsg[256];
             if (duration > 0) {
@@ -433,7 +430,7 @@ public Action Command_ConvarChecker(int client, int args)
     g_cvAdminFlag.GetString(flagString, sizeof(flagString));
     int flagBits = ReadFlagString(flagString);
     
-    if (!CheckCommandAccess(client, "sm_cfgds_admin", flagBits)) {
+    if (!CheckCommandAccess(client, "sm_cvc_admin", flagBits)) {
         ReplyToCommand(client, "You do not have access to this command.");
         return Plugin_Handled;
     }
@@ -472,10 +469,10 @@ public int MenuHandler_PlayerSelect(Menu menu, MenuAction action, int param1, in
         
         if (IsClientInGame(target)) {
             if (g_bChecking[target]) {
-                CPrintToChat(param1, "[{green}CFG Detection System{default}] Player is currently being checked, Please wait.");
+                CPrintToChat(param1, "[{green}ConVar Checker{default}] Player is currently being checked, Please wait.");
             } else {
                 StartConVarCheck(target, GetClientUserId(param1));
-                CPrintToChat(param1, "[{green}CFG Detection System{default}] Checking player {olive}%N{default}...", target);
+                CPrintToChat(param1, "[{green}ConVar Checker{default}] Checking player {olive}%N{default}...", target);
             }
         }
     } else if (action == MenuAction_End) {
